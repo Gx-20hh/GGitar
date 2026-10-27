@@ -68,7 +68,7 @@ private:
     TabPlayer& player;
 
     // 录音
-    juce::TimeSliceThread writerThread { "Lianqin recorder" };
+    juce::TimeSliceThread writerThread { "GGitar recorder" };
     std::unique_ptr<juce::AudioFormatWriter::ThreadedWriter> threadedWriter;
     juce::CriticalSection writerLock;         // 只在开始 / 停止时争用
     std::atomic<juce::AudioFormatWriter::ThreadedWriter*> activeWriter { nullptr };

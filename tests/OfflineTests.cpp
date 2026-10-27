@@ -1,5 +1,5 @@
 // 离线测试：不需要声卡，直接把合成的吉他信号送进引擎，检查输出。
-// 用法：LianqinTests <NAM 模型目录> <输出目录>
+// 用法：GGitarTests <NAM 模型目录> <输出目录>
 #include <juce_audio_formats/juce_audio_formats.h>
 #include <juce_events/juce_events.h>
 #include "AudioEngine.h"
@@ -128,7 +128,7 @@ static int renderHighwaySnapshots (const juce::File& songFile, const juce::File&
     AudioEngine engine;
     engine.prepareForOffline (sr, block);
     juce::PropertiesFile::Options o;
-    o.applicationName = "LianqinTests";
+    o.applicationName = "GGitarTests";
     juce::PropertiesFile props (outDir.getChildFile ("test.settings"), o);
     PracticeLog plog (outDir.getChildFile ("log.json"));
     PracticePanel panel (engine.getTabPlayer(), engine.getDrums(), engine.getJudge(), engine.getRecorder(), plog, props);
@@ -428,7 +428,7 @@ static int renderJudgeSnapshots (const juce::File& outDir)
     };
 
     juce::PropertiesFile::Options o;
-    o.applicationName = "LianqinTests";
+    o.applicationName = "GGitarTests";
     juce::PropertiesFile props (outDir.getChildFile ("test.settings"), o);
     PracticeLog plog (outDir.getChildFile ("log.json"));
     PracticePanel panel (engine.getTabPlayer(), engine.getDrums(), engine.getJudge(), engine.getRecorder(), plog, props);

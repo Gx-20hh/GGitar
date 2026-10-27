@@ -4,7 +4,7 @@
 #include "fx/EffectChain.h"
 
 // 音色预设：整条效果器链存成一个 xml 文件
-// 位置：我的文档\LianqinHost\音色预设\*.xml
+// 位置：我的文档\GGitar\音色预设\*.xml
 class PresetBar : public juce::Component
 {
 public:

@@ -411,7 +411,7 @@ juce::File PracticePanel::getTabsFolder() const
     if (f.isDirectory() || f.createDirectory().wasOk())
         if (f.hasWriteAccess())
             return f;
-    f = juce::File::getSpecialLocation (juce::File::userDocumentsDirectory).getChildFile ("LianqinHost").getChildFile (T ("吉他谱"));
+    f = juce::File::getSpecialLocation (juce::File::userDocumentsDirectory).getChildFile ("GGitar").getChildFile (T ("吉他谱"));
     f.createDirectory();
     return f;
 }

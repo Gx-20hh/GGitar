@@ -24,7 +24,7 @@ PracticeLog::~PracticeLog()
 juce::File PracticeLog::defaultFile()
 {
     return juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory)
-               .getChildFile ("LianqinHost").getChildFile (juce::String::fromUTF8 ("练习记录.json"));
+               .getChildFile ("GGitar").getChildFile (juce::String::fromUTF8 ("练习记录.json"));
 }
 
 PracticeLog::SongEntry& PracticeLog::entryFor (const juce::String& path, const juce::String& title)

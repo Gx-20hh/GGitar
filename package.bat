@@ -4,12 +4,12 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 echo ==================================================
-echo   老干部活动中心 打包（生成可以直接发给别人的压缩包）
+echo   GGitar 打包（生成可以直接发给别人的压缩包）
 echo ==================================================
 echo.
 
-if not exist "LianqinHost.exe" (
-    echo [错误] 还没有 LianqinHost.exe，请先运行 build.bat 编译。
+if not exist "GGitar.exe" (
+    echo [错误] 还没有 GGitar.exe，请先运行 build.bat 编译。
     pause
     exit /b 1
 )

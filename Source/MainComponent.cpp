@@ -26,7 +26,7 @@ namespace
 
     juce::File getAppDataFolder()
     {
-        return juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory).getChildFile ("LianqinHost");
+        return juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory).getChildFile ("GGitar");
     }
 }
 
@@ -35,9 +35,9 @@ MainComponent::MainComponent()
 {
     // 这台电脑第一次运行：如果压缩包里带了“默认设置”（打包的人当时的音色、鼓机、练习设置），就用它
     {
-        const auto userFile = getAppDataFolder().getChildFile ("LianqinHost.settings");
+        const auto userFile = getAppDataFolder().getChildFile ("GGitar.settings");
         const auto bundled = juce::File::getSpecialLocation (juce::File::currentExecutableFile).getParentDirectory()
-                                 .getChildFile (T ("默认设置")).getChildFile ("LianqinHost.settings");
+                                 .getChildFile (T ("默认设置")).getChildFile ("GGitar.settings");
         if (! userFile.existsAsFile() && bundled.existsAsFile())
         {
             getAppDataFolder().createDirectory();
@@ -46,8 +46,8 @@ MainComponent::MainComponent()
     }
 
     juce::PropertiesFile::Options opts;
-    opts.applicationName     = "LianqinHost";
-    opts.folderName          = "LianqinHost";
+    opts.applicationName     = "GGitar";
+    opts.folderName          = "GGitar";
     opts.filenameSuffix      = ".settings";
     opts.osxLibrarySubFolder = "Application Support";
     appProperties.setStorageParameters (opts);
@@ -58,7 +58,7 @@ MainComponent::MainComponent()
     styleLabel (titleLabel, 21.0f);
     titleLabel.setFont (juce::FontOptions (21.0f, juce::Font::bold));
     addAndMakeVisible (titleLabel);
-    authorLabel.setText (T ("制作者：") + T (AppInfo::author), juce::dontSendNotification);
+    authorLabel.setText (T ("维护者：") + T (AppInfo::author), juce::dontSendNotification);
     styleLabel (authorLabel, 12.5f, mutedText);
     addAndMakeVisible (authorLabel);
     styleLabel (statusLabel, 14.0f, mutedText);

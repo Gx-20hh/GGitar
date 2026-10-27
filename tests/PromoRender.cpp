@@ -124,7 +124,7 @@ namespace promo
     {
         RawScore raw;
         raw.title = "Punk Practice No.1";
-        raw.artist = "Lianqin";
+        raw.artist = "GGitar";
         raw.initialTempo = 140.0;
         RawTrack gtr, bass, drums;
         gtr.name = "Lead Guitar";   gtr.tuning = { 64, 59, 55, 50, 45, 40 };
@@ -248,7 +248,7 @@ namespace promo
     juce::PropertiesFile::Options propsOptions()
     {
         juce::PropertiesFile::Options o;
-        o.applicationName = "LianqinPromo";
+        o.applicationName = "GGitarPromo";
         return o;
     }
 }
@@ -655,8 +655,8 @@ int renderPromo2 (const juce::File& out)
     // ---- 主程序的设置：打开时就是 JCM800 + TS808 的音色 --------------------------------
     {
         juce::PropertiesFile::Options o;
-        o.applicationName = "LianqinHost";
-        o.folderName = "LianqinHost";
+        o.applicationName = "GGitar";
+        o.folderName = "GGitar";
         o.filenameSuffix = ".settings";
         juce::PropertiesFile p (o);
         if (auto xml = juce::parseXML (juce::String::fromUTF8 (DefaultPresets::listV2[3][1])))

@@ -21,7 +21,7 @@ namespace
     };
 }
 
-class LianqinApplication : public juce::JUCEApplication
+class GGitarApplication : public juce::JUCEApplication
 {
 public:
     const juce::String getApplicationName() override    { return JUCE_APPLICATION_NAME_STRING; }
@@ -31,7 +31,7 @@ public:
     void initialise (const juce::String&) override
     {
         juce::LookAndFeel::setDefaultLookAndFeel (&lookAndFeel);
-        mainWindow = std::make_unique<MainWindow> (T (AppInfo::name) + T ("  —  制作者：") + T (AppInfo::author));
+        mainWindow = std::make_unique<MainWindow> (T (AppInfo::name) + T ("  —  维护者：") + T (AppInfo::author));
     }
 
     void shutdown() override
@@ -70,4 +70,4 @@ private:
     std::unique_ptr<MainWindow> mainWindow;
 };
 
-START_JUCE_APPLICATION (LianqinApplication)
+START_JUCE_APPLICATION (GGitarApplication)

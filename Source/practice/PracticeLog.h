@@ -5,7 +5,7 @@
 #include <vector>
 
 // 练习记录：每天练了多久、每首歌练了多久 / 几次、每一遍的命中率和速度。
-// 存成 JSON（%APPDATA%\LianqinHost\练习记录.json），只在界面线程用。
+// 存成 JSON（%APPDATA%\GGitar\练习记录.json），只在界面线程用。
 class PracticeLog
 {
 public:
