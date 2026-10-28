@@ -3,7 +3,7 @@ GGitar —— 许可证与第三方组件声明
 
 本程序（GGitar，维护者：Gx-20hh；程序文件名 GGitar）按 GNU Affero 通用公共许可证第 3 版（AGPLv3）发布，
 全文见 AGPL-3.0.txt。本程序不提供任何担保。
-本项目基于老干部活动中心（LianqinHost）修改，原作者为痛风老大爷；原始版权声明见 LICENSE。
+本项目版权声明见 LICENSE。
 
 完整源代码就在发布包里的「源码.zip」中；用 build.bat 即可在 Windows 上重新编译。
 如果你修改后再分发给别人，也要按 AGPLv3 一起提供你修改后的源代码。
