@@ -53,6 +53,22 @@ namespace
 PracticePanel::PracticePanel (TabPlayer& p, DrumMachine& d, Judge& j, Recorder& rec, PracticeLog& lg, juce::PropertiesFile& s)
     : player (p), drums (d), judge (j), recorder (rec), log (lg), settings (s), highway (p)
 {
+    scorePage.setButtonText (T ("谱面跟弹")); libraryPage.setButtonText (T ("我的曲库"));
+    backingPage.setButtonText (T ("原曲伴奏")); fretboardPage.setButtonText (T ("指板训练"));
+    int page = 0;
+    for (auto* button : { &scorePage, &libraryPage, &backingPage, &fretboardPage })
+    {
+        addAndMakeVisible (button); const int index = page++;
+        button->onClick = [this, index] { setPage (index); };
+    }
+    addChildComponent (libraryPanel); addChildComponent (backingPanel); addChildComponent (fretboardPanel);
+    libraryPanel.onOpen = [this] (const juce::File& f) { if (loadFile (f)) setPage (0); };
+    fretboardPanel.onPractice = [this] (std::shared_ptr<Song> exercise)
+    {
+        if (calibrating) return;
+        installSong (exercise); setPage (0);
+        toolsMessage = T ("练习已生成，点击播放开始；可使用等待模式和 A–B 循环。");
+    };
     openButton.setButtonText (T ("打开谱子…"));
     openButton.onClick = [this] { chooseFile(); };
     recentButton.setButtonText (T ("最近 ▾"));
@@ -254,25 +270,11 @@ PracticePanel::PracticePanel (TabPlayer& p, DrumMachine& d, Judge& j, Recorder& 
     setWantsKeyboardFocus (true);
     startTimerHz (15);
 
-    // 自动打开上次的谱子
+    // Restore the last real score and its per-song practice settings.
     const juce::File last (settings.getValue ("tabLastFile"));
-    if (last.existsAsFile())
-    {
-        juce::String err;
-        if (auto loaded = loadSongFile (last, err))
-        {
-            song = std::shared_ptr<const Song> (loaded.release());
-            player.setSong (song);
-            const int savedTrack = settings.getIntValue ("tabLastTrack", song->defaultTrack());
-            const int t = savedTrack < 0 ? -1 : juce::jlimit (0, juce::jmax (0, (int) song->tracks.size() - 1), savedTrack);
-            mix.assign (song->tracks.size(), {});
-            applyMix();
-            player.setTrack (t);
-            highway.setSong (song, t >= 0 ? t : displayTrack());
-            refreshTrackBox();
-            selectTrack (t);
-        }
-    }
+    if (last.existsAsFile()) loadFile (last);
+    setPage (0);
+
 }
 
 PracticePanel::~PracticePanel()
@@ -308,8 +310,9 @@ void PracticePanel::saveSettings()
     settings.setValue ("tabCountIn", countInToggle.getToggleState());
     settings.setValue ("tabMetronome", metronomeToggle.getToggleState());
     settings.setValue ("tabDemo", demoToggle.getToggleState());
-    if (song != nullptr && ! calibrating)
+    if (song != nullptr && song->file.existsAsFile() && ! calibrating)
     {
+        library.remember (*song, player.getTrack(), speedSlider.getValue());
         settings.setValue ("tabLastFile", song->file.getFullPathName());
         settings.setValue ("tabLastTrack", player.getTrack());
     }
@@ -319,6 +322,7 @@ void PracticePanel::saveSettings()
 // -----------------------------------------------------------------------------
 bool PracticePanel::loadFile (const juce::File& file)
 {
+    if (calibrating) return false;
     juce::String err;
     auto loaded = loadSongFile (file, err);
     if (loaded == nullptr)
@@ -328,17 +332,7 @@ bool PracticePanel::loadFile (const juce::File& file)
         return false;
     }
 
-    song = std::shared_ptr<const Song> (loaded.release());
-    loopA = loopB = -1.0;
-    player.setSong (song);
-    const int t = song->defaultTrack();
-    mix.assign (song->tracks.size(), {});
-    applyMix();
-    player.setTrack (t);
-    highway.setSong (song, t);
-    refreshTrackBox();
-    selectTrack (t);
-    refreshLoopButtons();
+    installSong (std::shared_ptr<const Song> (loaded.release()));
 
     // 最近打开
     juce::StringArray recent;
@@ -350,6 +344,39 @@ bool PracticePanel::loadFile (const juce::File& file)
     settings.setValue ("tabRecent", recent.joinIntoString ("|"));
     saveSettings();
     return true;
+}
+
+void PracticePanel::installSong (std::shared_ptr<const Song> next)
+{
+    if (song && song->file.existsAsFile()) library.remember (*song, player.getTrack(), speedSlider.getValue());
+    if (recorder.isRecording()) recorder.stopRecording();
+    if (replaying) { recorder.stopPlayback(); finishReplay(); }
+    enableTrainer (false);
+    song = std::move (next); loopA = loopB = -1.0;
+    player.setSong (song);
+    auto* entry = song->file.existsAsFile() ? library.find (song->file.getFullPathName()) : nullptr;
+    int t = entry ? entry->track : song->defaultTrack();
+    if (t < -1 || t >= (int) song->tracks.size() || (t >= 0 && song->tracks[(size_t) t].percussion)) t = song->defaultTrack();
+    speedSlider.setValue (entry ? entry->speed : 100.0, juce::dontSendNotification);
+    player.setSpeed ((float) speedSlider.getValue() / 100.0f);
+    mix.assign (song->tracks.size(), {}); applyMix(); player.setTrack (t);
+    highway.setSong (song, t >= 0 ? t : displayTrack());
+    refreshTrackBox(); selectTrack (t); refreshLoopButtons();
+    backingPanel.songChanged (song->file.existsAsFile() ? song->file.getFullPathName() : juce::String());
+    library.remember (*song, t, speedSlider.getValue());
+}
+
+void PracticePanel::setPage (int page)
+{
+    pageIndex = page;
+    highway.setVisible (page == 0); libraryPanel.setVisible (page == 1);
+    backingPanel.setVisible (page == 2); fretboardPanel.setVisible (page == 3);
+    if (page != 0) summary.setVisible (false);
+    if (page == 1) libraryPanel.refresh();
+    int i = 0;
+    for (auto* b : { &scorePage, &libraryPage, &backingPage, &fretboardPage })
+        b->setToggleState (i++ == page, juce::dontSendNotification);
+    resized();
 }
 
 void PracticePanel::chooseFile()
@@ -595,7 +622,7 @@ void PracticePanel::timerCallback()
     const double nowMs = juce::Time::getMillisecondCounterHiRes();
     const double dt = (nowMs - lastTickMs) * 0.001;
     lastTickMs = nowMs;
-    if (song != nullptr && player.isPlaying() && ! player.isCountingIn() && ! calibrating && ! replaying && dt > 0.0 && dt < 1.0)
+    if (song != nullptr && song->file.existsAsFile() && player.isPlaying() && ! player.isCountingIn() && ! calibrating && ! replaying && dt > 0.0 && dt < 1.0)
         log.addTime (song->file.getFullPathName(), song->title, dt);
     if (++saveCounter % (15 * 30) == 0)
         log.saveIfNeeded();
@@ -687,9 +714,14 @@ void PracticePanel::paint (juce::Graphics& g)
 void PracticePanel::resized()
 {
     auto area = getLocalBounds();
+    auto nav = area.removeFromTop (32);
+    for (auto* button : { &scorePage, &libraryPage, &backingPage, &fretboardPage })
+        button->setBounds (nav.removeFromLeft (125).reduced (2, 0));
+    area.removeFromTop (6);
     controlsArea = area.removeFromTop (178);
     area.removeFromTop (10);
     highway.setBounds (area);
+    libraryPanel.setBounds (area); backingPanel.setBounds (area); fretboardPanel.setBounds (area);
     summary.setBounds (area.withSizeKeepingCentre (juce::jmin (460, area.getWidth() - 20), juce::jmin (240, area.getHeight() - 20)));
 
     auto c = controlsArea.reduced (14, 10);
@@ -807,10 +839,10 @@ void PracticePanel::showSummary()
     if (judgeSession == nullptr || judgeSession->computeStats().judged() < 5)
         return;
     if (song != nullptr)
-        log.addPass (song->file.getFullPathName(), song->title, judgeSession->computeStats().accuracy(), player.getSpeed());
+        if (song->file.existsAsFile()) log.addPass (song->file.getFullPathName(), song->title, judgeSession->computeStats().accuracy(), player.getSpeed());
     summary.show (*judgeSession);
-    summary.setVisible (true);
-    summary.toFront (false);
+    summary.setVisible (pageIndex == 0);
+    if (pageIndex == 0) summary.toFront (false);
 }
 
 void PracticePanel::startCalibration()
@@ -852,6 +884,9 @@ void PracticePanel::startCalibration()
     saved = { song, player.getTrack(), countInToggle.getToggleState(), metronomeToggle.getToggleState(),
               demoToggle.getToggleState(), waitToggle.getToggleState(), player.getSpeed() };
     calibrating = true;
+    backingPanel.setEnabled (false);
+    player.backing.setMuted (true);
+    setPage (0);
     summary.setVisible (false);
     if (drums.isPlaying()) drums.setPlaying (false);
 
@@ -880,6 +915,8 @@ void PracticePanel::startCalibration()
 void PracticePanel::finishCalibration()
 {
     calibrating = false;
+    backingPanel.setEnabled (true);
+    backingPanel.restoreMute();
 
     std::vector<float> offsets;
     if (calibrationSession != nullptr)
@@ -1411,7 +1448,7 @@ void PracticePanel::enableTrainer (bool on)
 void PracticePanel::onLoopPass (float accuracy)
 {
     if (song != nullptr && accuracy >= 0.0f)
-        log.addPass (song->file.getFullPathName(), song->title, accuracy, player.getSpeed());
+        if (song->file.existsAsFile()) log.addPass (song->file.getFullPathName(), song->title, accuracy, player.getSpeed());
 
     if (trainer.enabled)
     {

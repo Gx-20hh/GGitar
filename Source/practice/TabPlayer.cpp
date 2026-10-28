@@ -267,6 +267,9 @@ void TabPlayer::render (float* left, float* right, int numSamples, DrumMachine& 
         lastBlock = {};
     }
 
+    backing.render (left, right, numSamples, activeSong, lastBlock.rolling,
+                    lastBlock.beat, lastBlock.beatsPerSample, lastBlock.wrapOffset, lastBlock.wrapBeat);
+
     // 合成器：示范和伴奏各自的音量
     float dL[512], dR[512], bL[512], bR[512];
     for (int pos = 0; pos < numSamples; )

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 # 静态链接 MSVC 运行库：别人的电脑上不用装 VC++ 运行库也能打开
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(GGitar VERSION 0.3.0 LANGUAGES C CXX)
+project(GGitar VERSION 0.4.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -160,4 +160,23 @@ if(GGITAR_BUILD_TESTS)
     endif()
     target_link_libraries(GGitarTests PRIVATE nam_core juce::juce_audio_utils juce::juce_dsp
         PUBLIC juce::juce_recommended_config_flags)
+endif()
+
+# Feature tests: library persistence, training patterns, backing audio and UI snapshots.
+if(GGITAR_BUILD_TESTS)
+    juce_add_console_app(GGitarFeatureTests PRODUCT_NAME "GGitarFeatureTests")
+    target_sources(GGitarFeatureTests PRIVATE tests/FeatureTests.cpp
+        Source/song/SongBuilder.cpp Source/song/GpImporter.cpp
+        Source/practice/TabPlayer.cpp Source/drums/DrumMachine.cpp)
+    target_include_directories(GGitarFeatureTests PRIVATE Source)
+    target_compile_definitions(GGitarFeatureTests PRIVATE
+        JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_ALSA=0 JUCE_JACK=0
+        JUCE_USE_XRANDR=0 JUCE_USE_XINERAMA=0 JUCE_USE_XCURSOR=0 JUCE_USE_XINPUT=0)
+    if(MSVC)
+        target_compile_options(GGitarFeatureTests PRIVATE /utf-8 /bigobj)
+    endif()
+    target_link_libraries(GGitarFeatureTests PRIVATE juce::juce_audio_utils juce::juce_dsp
+        PUBLIC juce::juce_recommended_config_flags)
+    enable_testing()
+    add_test(NAME GGitarFeatures COMMAND GGitarFeatureTests "${CMAKE_BINARY_DIR}/feature-test-output")
 endif()

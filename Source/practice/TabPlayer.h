@@ -7,6 +7,7 @@
 #include <vector>
 #include "song/Song.h"
 #include "PluckSynth.h"
+#include "BackingTrack.h"
 
 class DrumMachine;
 
@@ -16,6 +17,7 @@ class TabPlayer
 {
 public:
     TabPlayer();
+    BackingTrack backing;
 
     // ---- 界面线程 -----------------------------------------------------------
     void setSong (std::shared_ptr<const Song> song);

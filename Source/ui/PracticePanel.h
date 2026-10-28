@@ -4,6 +4,9 @@
 #include <juce_data_structures/juce_data_structures.h>
 #include "TabHighway.h"
 #include "TabSearch.h"
+#include "LibraryPanel.h"
+#include "BackingPanel.h"
+#include "FretboardPanel.h"
 #include "practice/Recorder.h"
 #include "practice/SpeedTrainer.h"
 #include "practice/PracticeLog.h"
@@ -69,6 +72,8 @@ public:
     bool keyPressed (const juce::KeyPress&) override;
 
 private:
+    void setPage (int page);
+    void installSong (std::shared_ptr<const Song> next);
     void timerCallback() override;
     void chooseFile();
     void showRecentMenu();
@@ -107,6 +112,12 @@ private:
     PracticeLog& log;
     juce::PropertiesFile& settings;
     std::shared_ptr<const Song> song;
+    SongLibrary library { settings };
+    LibraryPanel libraryPanel { library };
+    BackingPanel backingPanel { player, settings };
+    FretboardPanel fretboardPanel { player };
+    juce::TextButton scorePage, libraryPage, backingPage, fretboardPage;
+    int pageIndex = 0;
 
     juce::TextButton openButton, recentButton, searchButton, stopWatchButton, playButton, rewindButton, prevBarButton, nextBarButton;
     juce::TextButton loopAButton, loopBButton, loopClearButton;

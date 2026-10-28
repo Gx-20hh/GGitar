@@ -39,7 +39,7 @@ if (Test-Path $myPresets) {
 $mySettings = Join-Path $env:APPDATA 'GGitar\GGitar.settings'
 if (Test-Path $mySettings) {
     [xml]$x = Get-Content $mySettings -Raw -Encoding UTF8
-    $drop = @('audioDevice', 'guitarChannel', 'knownPlugins', 'tabRecent', 'tabLastFile', 'tabLastFolder',
+    $drop = @('songLibrary', 'backingTracks', 'audioDevice', 'guitarChannel', 'knownPlugins', 'tabRecent', 'tabLastFile', 'tabLastFolder',
               'tabWatchFolder', 'judgeCalibrationMs', 'defaultPresetsVersion', 'bundledPresetsStamp')
     foreach ($v in @($x.PROPERTIES.VALUE)) { if ($drop -contains $v.GetAttribute('name')) { [void]$x.PROPERTIES.RemoveChild($v) } }
     $setDir = New-Item -ItemType Directory (Join-Path $stage '默认设置')
