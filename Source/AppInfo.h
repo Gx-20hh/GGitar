@@ -1,6 +1,6 @@
 #pragma once
 
-// GGitar 的显示名称与当前维护者；原始版权见 LICENSE。
+// GGitar 的显示名称与当前维护者。
 namespace AppInfo
 {
     inline const char* name   = "GGitar";
