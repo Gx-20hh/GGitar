@@ -50,7 +50,7 @@ PresetBar::PresetBar (EffectChain& c, juce::PropertiesFile& s) : chain (c), sett
 juce::File PresetBar::getPresetFolder()
 {
     return juce::File::getSpecialLocation (juce::File::userDocumentsDirectory)
-               .getChildFile ("GGitar").getChildFile (T ("音色预设"));
+               .getChildFile ("LianqinHost").getChildFile (T ("音色预设"));
 }
 
 void PresetBar::createDefaultPresetsIfNeeded()

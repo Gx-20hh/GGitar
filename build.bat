@@ -4,7 +4,7 @@ chcp 65001 >nul
 cd /d "%~dp0"
 
 echo ==================================================
-echo   GGitar 一键编译
+echo   老干部活动中心 一键编译
 echo ==================================================
 echo.
 
@@ -119,14 +119,14 @@ echo [2/2] 编译 Release 版本（第一次约 3-10 分钟）...
 "%CMAKE%" --build build --config Release --parallel
 if errorlevel 1 goto :cleanup_fail
 
-copy /y "build\GGitar_artefacts\Release\GGitar.exe" "GGitar.exe" >nul
+copy /y "build\LianqinHost_artefacts\Release\LianqinHost.exe" "LianqinHost.exe" >nul
 
 popd
 subst %DRV%: /d >nul
 
 echo.
 echo ==================================================
-echo   编译成功！双击 GGitar.exe 运行。
+echo   编译成功！双击 LianqinHost.exe 运行。
 echo ==================================================
 pause
 exit /b 0

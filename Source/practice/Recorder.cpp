@@ -75,7 +75,7 @@ Recorder::~Recorder()
 juce::File Recorder::getFolder()
 {
     return juce::File::getSpecialLocation (juce::File::userDocumentsDirectory)
-               .getChildFile ("GGitar").getChildFile (T ("录音"));
+               .getChildFile ("LianqinHost").getChildFile (T ("录音"));
 }
 
 // ---- 录音（界面线程）-------------------------------------------------------------

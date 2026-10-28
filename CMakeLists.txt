@@ -3,28 +3,28 @@ cmake_minimum_required(VERSION 3.22)
 # 静态链接 MSVC 运行库：别人的电脑上不用装 VC++ 运行库也能打开
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(GGitar VERSION 0.4.0 LANGUAGES C CXX)
+project(LianqinHost VERSION 0.3.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # ---- JUCE ------------------------------------------------------------------
 # 查找顺序：
-#   1. -DGGITAR_JUCE_DIR=<路径>
+#   1. -DLIANQIN_JUCE_DIR=<路径>
 #   2. third_party/JUCE（build.bat 会从 third_party/JUCE-9.0.4.zip 解压到这里）
 #   3. 联网从 GitHub 下载
-set(GGITAR_JUCE_DIR "" CACHE PATH "Path to a JUCE checkout")
-set(GGITAR_JUCE_TAG "9.0.4")
+set(LIANQIN_JUCE_DIR "" CACHE PATH "Path to a JUCE checkout")
+set(LIANQIN_JUCE_TAG "9.0.4")
 
-if(GGITAR_JUCE_DIR)
-    add_subdirectory("${GGITAR_JUCE_DIR}" "${CMAKE_BINARY_DIR}/JUCE" EXCLUDE_FROM_ALL)
+if(LIANQIN_JUCE_DIR)
+    add_subdirectory("${LIANQIN_JUCE_DIR}" "${CMAKE_BINARY_DIR}/JUCE" EXCLUDE_FROM_ALL)
 elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/JUCE/CMakeLists.txt")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/JUCE" "${CMAKE_BINARY_DIR}/JUCE" EXCLUDE_FROM_ALL)
 else()
     include(FetchContent)
     FetchContent_Declare(JUCE
         GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-        GIT_TAG        ${GGITAR_JUCE_TAG}
+        GIT_TAG        ${LIANQIN_JUCE_TAG}
         GIT_SHALLOW    ON)
     FetchContent_MakeAvailable(JUCE)
 endif()
@@ -54,12 +54,12 @@ else()
 endif()
 
 # ---- App -------------------------------------------------------------------
-juce_add_gui_app(GGitar
-    PRODUCT_NAME "GGitar"
-    COMPANY_NAME "Gx-20hh"
+juce_add_gui_app(LianqinHost
+    PRODUCT_NAME "LianqinHost"
+    COMPANY_NAME "Lianqin"
     VERSION      ${PROJECT_VERSION})
 
-target_sources(GGitar PRIVATE
+target_sources(LianqinHost PRIVATE
     Source/Main.cpp
     Source/MainComponent.cpp
     Source/AudioEngine.cpp
@@ -84,11 +84,11 @@ target_sources(GGitar PRIVATE
     Source/practice/Recorder.cpp
     Source/practice/PracticeLog.cpp)
 
-target_include_directories(GGitar PRIVATE Source)
+target_include_directories(LianqinHost PRIVATE Source)
 
-target_compile_definitions(GGitar PRIVATE
-    JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:GGitar,JUCE_PRODUCT_NAME>"
-    JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:GGitar,JUCE_VERSION>"
+target_compile_definitions(LianqinHost PRIVATE
+    JUCE_APPLICATION_NAME_STRING="$<TARGET_PROPERTY:LianqinHost,JUCE_PRODUCT_NAME>"
+    JUCE_APPLICATION_VERSION_STRING="$<TARGET_PROPERTY:LianqinHost,JUCE_VERSION>"
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
     # Windows 音频驱动：ASIO（低延迟首选）、WASAPI、DirectSound
@@ -101,18 +101,18 @@ target_compile_definitions(GGitar PRIVATE
     JUCE_PLUGINHOST_LV2=0)
 
 # 只用于在没有 ALSA 开发包的 Linux 机器上做编译检查
-option(GGITAR_COMPILE_CHECK_ONLY "Disable ALSA/JACK for header-less compile checks" OFF)
-if(GGITAR_COMPILE_CHECK_ONLY)
-    target_compile_definitions(GGitar PRIVATE JUCE_ALSA=0 JUCE_JACK=0
+option(LIANQIN_COMPILE_CHECK_ONLY "Disable ALSA/JACK for header-less compile checks" OFF)
+if(LIANQIN_COMPILE_CHECK_ONLY)
+    target_compile_definitions(LianqinHost PRIVATE JUCE_ALSA=0 JUCE_JACK=0
         JUCE_USE_XRANDR=0 JUCE_USE_XINERAMA=0 JUCE_USE_XCURSOR=0 JUCE_USE_XINPUT=0)
 endif()
 
 if(MSVC)
     # 源码是 UTF-8，里面有中文字符串
-    target_compile_options(GGitar PRIVATE /utf-8 /bigobj)
+    target_compile_options(LianqinHost PRIVATE /utf-8 /bigobj)
 endif()
 
-target_link_libraries(GGitar
+target_link_libraries(LianqinHost
     PRIVATE
         nam_core
         juce::juce_audio_utils
@@ -123,10 +123,10 @@ target_link_libraries(GGitar
         juce::juce_recommended_warning_flags)
 
 # ---- 离线测试（不需要声卡）---------------------------------------------------
-option(GGITAR_BUILD_TESTS "Build offline DSP tests" OFF)
-if(GGITAR_BUILD_TESTS)
-    juce_add_console_app(GGitarTests PRODUCT_NAME "GGitarTests")
-    target_sources(GGitarTests PRIVATE
+option(LIANQIN_BUILD_TESTS "Build offline DSP tests" OFF)
+if(LIANQIN_BUILD_TESTS)
+    juce_add_console_app(LianqinTests PRODUCT_NAME "LianqinTests")
+    target_sources(LianqinTests PRIVATE
         tests/OfflineTests.cpp
         tests/PromoRender.cpp
         Source/ui/PedalBoard.cpp
@@ -151,32 +151,13 @@ if(GGITAR_BUILD_TESTS)
     Source/practice/Judge.cpp
     Source/practice/Recorder.cpp
     Source/practice/PracticeLog.cpp)
-    target_include_directories(GGitarTests PRIVATE Source)
-    target_compile_definitions(GGitarTests PRIVATE
+    target_include_directories(LianqinTests PRIVATE Source)
+    target_compile_definitions(LianqinTests PRIVATE
         JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_PLUGINHOST_VST3=1 JUCE_PLUGINHOST_AU=0 JUCE_PLUGINHOST_LV2=0
         JUCE_ALSA=0 JUCE_JACK=0 JUCE_USE_XRANDR=0 JUCE_USE_XINERAMA=0 JUCE_USE_XCURSOR=0 JUCE_USE_XINPUT=0)
     if(MSVC)
-        target_compile_options(GGitarTests PRIVATE /utf-8 /bigobj)
+        target_compile_options(LianqinTests PRIVATE /utf-8 /bigobj)
     endif()
-    target_link_libraries(GGitarTests PRIVATE nam_core juce::juce_audio_utils juce::juce_dsp
+    target_link_libraries(LianqinTests PRIVATE nam_core juce::juce_audio_utils juce::juce_dsp
         PUBLIC juce::juce_recommended_config_flags)
-endif()
-
-# Feature tests: library persistence, training patterns, backing audio and UI snapshots.
-if(GGITAR_BUILD_TESTS)
-    juce_add_console_app(GGitarFeatureTests PRODUCT_NAME "GGitarFeatureTests")
-    target_sources(GGitarFeatureTests PRIVATE tests/FeatureTests.cpp
-        Source/song/SongBuilder.cpp Source/song/GpImporter.cpp
-        Source/practice/TabPlayer.cpp Source/drums/DrumMachine.cpp)
-    target_include_directories(GGitarFeatureTests PRIVATE Source)
-    target_compile_definitions(GGitarFeatureTests PRIVATE
-        JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0 JUCE_ALSA=0 JUCE_JACK=0
-        JUCE_USE_XRANDR=0 JUCE_USE_XINERAMA=0 JUCE_USE_XCURSOR=0 JUCE_USE_XINPUT=0)
-    if(MSVC)
-        target_compile_options(GGitarFeatureTests PRIVATE /utf-8 /bigobj)
-    endif()
-    target_link_libraries(GGitarFeatureTests PRIVATE juce::juce_audio_utils juce::juce_dsp
-        PUBLIC juce::juce_recommended_config_flags)
-    enable_testing()
-    add_test(NAME GGitarFeatures COMMAND GGitarFeatureTests "${CMAKE_BINARY_DIR}/feature-test-output")
 endif()

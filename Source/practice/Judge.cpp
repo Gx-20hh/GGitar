@@ -189,7 +189,7 @@ void JudgeFeed::popSamples (float* dest, int n) noexcept
 }
 
 // =============================================================================
-Judge::Judge (TabPlayer& p) : juce::Thread ("GGitar judge"), player (p) {}
+Judge::Judge (TabPlayer& p) : juce::Thread ("Lianqin judge"), player (p) {}
 
 Judge::~Judge()
 {
