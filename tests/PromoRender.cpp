@@ -124,7 +124,7 @@ namespace promo
     {
         RawScore raw;
         raw.title = "Punk Practice No.1";
-        raw.artist = "Lianqin";
+        raw.artist = "Gx-20hh";
         raw.initialTempo = 140.0;
         RawTrack gtr, bass, drums;
         gtr.name = "Lead Guitar";   gtr.tuning = { 64, 59, 55, 50, 45, 40 };

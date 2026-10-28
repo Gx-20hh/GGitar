@@ -55,8 +55,8 @@ endif()
 
 # ---- App -------------------------------------------------------------------
 juce_add_gui_app(LianqinHost
-    PRODUCT_NAME "LianqinHost"
-    COMPANY_NAME "Lianqin"
+    PRODUCT_NAME "GGitar"
+    COMPANY_NAME "Gx-20hh"
     VERSION      ${PROJECT_VERSION})
 
 target_sources(LianqinHost PRIVATE

@@ -31,7 +31,7 @@ public:
     void initialise (const juce::String&) override
     {
         juce::LookAndFeel::setDefaultLookAndFeel (&lookAndFeel);
-        mainWindow = std::make_unique<MainWindow> (T (AppInfo::name) + T ("  —  制作者：") + T (AppInfo::author));
+        mainWindow = std::make_unique<MainWindow> (T (AppInfo::name) + T ("  ·  ") + T (AppInfo::author));
     }
 
     void shutdown() override

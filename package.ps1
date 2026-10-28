@@ -1,6 +1,6 @@
-﻿# 老干部活动中心 打包脚本（由 package.bat 调用）
+﻿# GGitar 打包脚本（由 package.bat 调用）
 # 生成：
-#   发布\老干部活动中心-v<版本>.zip       给别人用的：程序 + 音色库 + 你的音色预设和设置 + 使用说明 + 许可证 + 源码.zip
+#   发布\GGitar-v<版本>.zip       给别人用的：程序 + 音色库 + 你的音色预设和设置 + 使用说明 + 许可证 + 源码.zip
 #   别人解压后第一次打开，看到的音色、效果器、鼓机和练习设置都和你打包时一样（声卡要他自己选）
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -10,7 +10,7 @@ $cmake = Get-Content (Join-Path $root 'CMakeLists.txt') -Raw -Encoding UTF8
 $ver = if ($cmake -match 'project\(LianqinHost VERSION ([0-9.]+)') { $Matches[1] } else { '0.0.0' }
 
 $outDir  = Join-Path $root '发布'
-$name    = "老干部活动中心-v$ver"
+$name    = "GGitar-v$ver"
 $stage   = Join-Path $outDir $name
 $tmp     = Join-Path $outDir '_tmp'
 $zipFile = Join-Path $outDir "$name.zip"
@@ -20,7 +20,7 @@ New-Item -ItemType Directory -Force $stage | Out-Null
 New-Item -ItemType Directory -Force $tmp | Out-Null
 
 Write-Host "[1/4] 复制程序和音色库..."
-Copy-Item (Join-Path $root 'LianqinHost.exe') $stage
+Copy-Item (Join-Path $root 'GGitar.exe') $stage
 $lib = Join-Path $root '音色库'
 if (Test-Path $lib) { Copy-Item $lib (Join-Path $stage '音色库') -Recurse }
 else { New-Item -ItemType Directory (Join-Path $stage '音色库') | Out-Null }
@@ -56,7 +56,7 @@ Copy-Item (Join-Path $root '使用说明.txt') $stage
 Copy-Item (Join-Path $root 'licenses') (Join-Path $stage '许可证') -Recurse
 
 Write-Host "[2/4] 打包源码（AGPLv3 要求随程序提供源码）..."
-$src = Join-Path $tmp '老干部活动中心-源码'
+$src = Join-Path $tmp 'GGitar-源码'
 New-Item -ItemType Directory $src | Out-Null
 foreach ($item in @('Source', 'tests', 'licenses', 'CMakeLists.txt', 'build.bat', 'package.bat', 'package.ps1',
                     'README.md', 'LICENSE', '使用说明.txt', '.gitignore')) {

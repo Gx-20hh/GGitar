@@ -58,7 +58,7 @@ MainComponent::MainComponent()
     styleLabel (titleLabel, 21.0f);
     titleLabel.setFont (juce::FontOptions (21.0f, juce::Font::bold));
     addAndMakeVisible (titleLabel);
-    authorLabel.setText (T ("制作者：") + T (AppInfo::author), juce::dontSendNotification);
+    authorLabel.setText (T ("维护：") + T (AppInfo::author), juce::dontSendNotification);
     styleLabel (authorLabel, 12.5f, mutedText);
     addAndMakeVisible (authorLabel);
     styleLabel (statusLabel, 14.0f, mutedText);
