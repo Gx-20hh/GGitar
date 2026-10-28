@@ -211,7 +211,6 @@ ASIO SDK（GPLv3 / Steinberg 专有）、VST3 SDK（MIT）、NeuralAmpModelerCor
 
 GGitar 使用独立的数据目录，不删除旧数据。若用过 LianqinHost，请先退出两个程序，再将 `%APPDATA%\LianqinHost` 复制为 `%APPDATA%\GGitar`，将其中 `LianqinHost.settings` 改名为 `GGitar.settings`；将“我的文档”中的 `LianqinHost` 目录复制为 `GGitar`。已有 GGitar 数据时请先备份并逐项合并，不要直接覆盖。旧设置中的绝对路径仍指向原文件，确认预设、录音和谱子可用后再整理旧目录。
 
-本项目由原版修改而来，原始作者与版权声明保留在 `LICENSE` 和 `licenses/第三方声明.txt` 中。
 
 ## 新功能验证
 
